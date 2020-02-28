@@ -9,7 +9,7 @@ import random, csv, math
 '''
 Vestigial issues: why are we dropping the first fixation before saccade? fix(0) = saccade(0)-1
 '''
-f = h5py.File('free_fix_events.hdf5', 'r')
+f = h5py.File('events.hdf5', 'r')
 temp1 = f["data_collection"]
 #print(list(temp1["events"]))
 messages = temp1["events"]["experiment"]["MessageEvent"]
@@ -158,60 +158,6 @@ for session in range(1,session_max+1): #Loops every session
                         
         i+=2; trial+=1;
 
-
-
-'''for session in range(1,session_max+1): #Loops through every session
-    trial=1; i = 0; sac_count = 0; fix_count = 0
-    #print("session: " + str(session))
-    while i < (len(mes_time_list[session]["fixtime"])): #Loops through every trial per session
-        if session == 2:
-            print("i = " + str(i))
-        targetSlice = getTargetSlice(trial)
-        sac_x = []; sac_y = []; fix_auto_dur = [];
-    
-        stime = mes_time_list[session]["fixtime"][i] 
-        etime = mes_time_list[session]["fixtime"][i+1] 
-        #if i == 8:
-            #print(str(stime) + " and " + str(etime)) #85.176 - 128.778
-        if session == 2:    
-            print("trial: " + str(trial))
-        for sac in range(0, len(sac_end)): 
-            if (sac_end[sac]["session_id"] == session):
-                sactime = sac_end[sac]["time"]
-                if trial == 2:
-                    print("TRIAL 3")
-                if int(getCurrentSlice(sactime, stime, etime, session)) == int(targetSlice): 
-                    if stime <= sactime and etime >= sactime:
-                        sac_x.append(sac_end[sac]["end_gaze_x"])
-                        sac_y.append(sac_end[sac]["end_gaze_y"])
-                        sac_count=sac
-                
-        for fix in range (0, len(fix_end)):  
-            if (fix_end[fix]["session_id"] == session):                
-                fixtime = fix_end[fix]["time"]
-                if int(getCurrentSlice(fixtime, stime, etime, session)) == int(targetSlice): 
-                    if stime <= fixtime and fixtime <= etime:
-                        fix_auto_dur.append(fix_end[fix]["duration"])
-                        fix_count=fix
-        
-        for x in range(len(sac_y)):
-            sac_x[x]+=1280/2
-            sac_y[x]+=1024/2
-                
-        if session in cond2_sessions:
-            #print("cond2")
-            plotData["condition40"]["x"].append(sac_x)
-            plotData["condition40"]["y"].append(sac_y)
-            plotData["condition40"]["fixtime"].append(fix_auto_dur)
-            plotData["condition40"]["distance"].append(findDistance(trial+1,sac_x,sac_y))
-        
-        if session in cond1_sessions:
-            #print("cond1")
-            plotData["condition20"]["x"].append(sac_x)
-            plotData["condition20"]["y"].append(sac_y)
-            plotData["condition20"]["fixtime"].append(fix_auto_dur)
-            plotData["condition20"]["distance"].append(findDistance(trial+1,sac_x,sac_y))
-        i+=2; trial+=1;
 
 graphnum = 1
 for i in range(0, len(plotData["condition20"]["x"])): #for i from 0-10
