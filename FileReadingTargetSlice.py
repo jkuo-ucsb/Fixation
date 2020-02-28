@@ -5,10 +5,7 @@ import h5py
 import matplotlib.pyplot as plt
 import numpy as np
 import random, csv, math
-#panda 3d??? 
-'''
-Vestigial issues: why are we dropping the first fixation before saccade? fix(0) = saccade(0)-1
-'''
+
 f = h5py.File('free_fix_events_fixed.hdf5', 'r')
 temp1 = f["data_collection"]
 #print(list(temp1["events"]))
@@ -46,8 +43,8 @@ def findDistance(targetNum,x,y): #Given target trial, x and y arrays, return dis
         data=coordFile.readline()
     data = data.split("#")
     print(data)
-    x1=float(data[0]); y1=float(data[1]);x2=float(data[2]);y2=float(data[3])
-    xc = round((float(x1)+float(x2))/2); yc = round((float(y1)+float(y2))/2)
+    x1=float(data[0]); y1=float(data[1]);x2=float(data[2]);y2=float(data[3]) #Casually rederiving Pythagorean's Theorem.
+    xc = round((float(x1)+float(x2))/2); yc = round((float(y1)+float(y2))/2) #There's probably a package for this we could find. 
     for i in range(0,len(x)):
         distance = 10000000
         dx=x[i]-x1; dx=dx*dx; dy=y[i]-y1; dy=dy*dy; dval=dx+dy; dval=math.sqrt(dval)
@@ -63,18 +60,17 @@ def findDistance(targetNum,x,y): #Given target trial, x and y arrays, return dis
     distancesTotal.append(distances)    
     return distances
 
-def getCurrentSlice(s_time, sac_time, condition):
+def getCurrentSlice(s_time, sac_time, condition): #Given a saccade time, find what slice it's on
     currentslice = 1;
     for i in range(0, len(mes_time_list[condition]["dirtime"])):   
         time = mes_time_list[condition]["dirtime"][i]
-        #if time > sac_time:
-        #    break
+        if time > sac_time:
+            break
         if s_time <= time and time <= sac_time:
             if "RIGHT" in mes_time_list[condition]["direction"][i]:
                 currentslice +=1
             if "LEFT" in mes_time_list[condition]["direction"][i]:
                 currentslice -=1
-    #print(currentslice)
     return currentslice
 
 session_max = 1
@@ -83,7 +79,7 @@ for sac in sac_end:
     if sess > session_max:
         session_max = sess
         
-cond1_sessions = []; cond2_sessions = []; dirList = []; dirTimeList = []
+cond1_sessions = []; cond2_sessions = [];
 for mes in messages: 
     mestest = mes["text"]
     mestest = mestest.decode('UTF-8')
@@ -107,7 +103,7 @@ for mes in messages:
             mes_time_list[1]["direction"].append("LEFT")
             mes_time_list[1]["dirtime"].append(mes["time"])
 
-    if "40" in mestest: #probably? should only append once since the message is once per session LOL
+    if "40" in mestest: 
         cond2_sessions.append(mes["session_id"])
     if "20" in mestest:
         cond1_sessions.append(mes["session_id"])
@@ -140,12 +136,11 @@ for session in range(1,session_max+1): #Loops every session
                         fix_dur.append(fix_end[fix]["duration"])
                         fix_count=fix
 
-        for x in range(len(sac_y)):
+        for x in range(len(sac_y)): #Reformatting X,Y data from 0,0 at center to 0,0 at bottom left corner
             sac_x[x]+=1280/2
             sac_y[x]+=1024/2
+                
         if session == 2:
-            #print(str(i) + " cond2")
-            #print(sac_x)
             plotData["condition40"]["x"].append(sac_x)
             plotData["condition40"]["y"].append(sac_y)
             plotData["condition40"]["fixtime"].append(fix_dur)
@@ -176,7 +171,7 @@ for i in range(0, len(plotData["condition20"]["x"])): #for i from 0-10
     rgba_colors2[:,2] = 0.5 #Columns for RGB values
     rgba_colors2[:, 3] = alphas2 #Alpha values
     
-    fig.suptitle("TRIAL " + str(graphnum), x=1.0)
+    fig.suptitle("TRIAL " + str(graphnum), x=1.0) #Messy commands for matplotlib graphs, formatting, etc. 
     axs1.scatter(plotData["condition20"]["x"][i], 
                  plotData["condition20"]["y"][i], s=mark1,color = rgba_colors1)
     axs2.scatter(plotData["condition40"]["x"][i], 
@@ -189,7 +184,4 @@ for i in range(0, len(plotData["condition20"]["x"])): #for i from 0-10
     axs2.set_title("40s Condition")    
     plt.subplots_adjust(right = 2.0, wspace=0.5)    
     graphnum+=1
-
-    #plot image behind 
-    #np.linalg.norm
 
