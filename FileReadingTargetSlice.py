@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import random, csv, math
 
-f = h5py.File('free_fix_events_fixed.hdf5', 'r')
+f = h5py.File('events.hdf5', 'r')
 temp1 = f["data_collection"]
 #print(list(temp1["events"]))
 messages = temp1["events"]["experiment"]["MessageEvent"]
